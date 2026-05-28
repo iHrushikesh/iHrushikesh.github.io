@@ -1,0 +1,163 @@
+# Hrushikesh Deshmukh — Senior Software Engineer (MS CS)
+
+> Applying to: OpenAI · Software Engineer, Enterprise AI Platform (EPT AI Pod)
+> This variant frames my work for the EPT context. Canonical resume at /resume.pdf
+> All audience variants listed at /variants
+
+## Why this role
+
+The JD describes work I'm doing today and the work I'm moving toward. I ship
+a production MCP server to internal and third-party audiences through Amazon's
+enterprise build infrastructure, and I designed a multi-agent orchestration
+framework for developer tooling. Both are in production at Amazon Devices.
+
+The interesting engineering isn't in the AI itself — it's in the enterprise
+distribution path, the stakeholder alignment, the dual-audience versioning,
+and the reusable framework I built to unblock GA when a prior owner left
+scope errors behind. That's the same problem shape EPT solves for Finance,
+People, and GTM workflows.
+
+## Most relevant work
+
+### 1. Production MCP server: @amazon-devices/amazon-devices-buildertools-mcp
+
+- Public npm package, [K] months in production
+- Dual-fork distribution: internal Amazon consumers + external third-party
+  device makers, both from a single source of truth
+- The MCP itself is intentionally simple (static prompts + bundled context).
+  Reliability and audit-readiness over novelty.
+
+**Security model: content firewall, not runtime auth**
+- No runtime authentication because the public artifact is structurally
+  incapable of containing internal content.
+- Guardrails in the publish pipeline statically verify the public fork:
+  no internal API references, no Amazon-private prompts, no internal-only
+  tool descriptions can make it into the artifact that ships to npm.
+- This is the right shape of security: prevent sensitive content from
+  entering the artifact, rather than gating access to an artifact that
+  already contains it.
+
+**Development workflow: spec-driven with Claude**
+- Designed spec-first. The spec is the source of truth from which both
+  forks generate. This is what keeps the dual-fork model maintainable.
+- I treat AI assistance as a design partner for spec'd work and a
+  pair-programmer for code, not as a code generator.
+
+**Why this work is harder than it looks**
+- The package is public-facing. The stakeholder set includes Solutions
+  Architects (who represent customer reality), support teams (who own
+  post-launch), developer evangelists (who own positioning), and product
+  leadership (who own prioritization).
+- These stakeholders are strongly opinionated and their priorities compete.
+  The work of aligning them is non-linear — multiple workshops, dog-fooding
+  sessions with internal and external developers, iterative feedback cycles.
+- The hardest part was not the MCP. It was navigating the enterprise
+  stakeholder landscape to ship something public-facing through an
+  organization that moves carefully.
+- Same problem shape as the EPT pod: building reliable internal products
+  while partnering with system owners and business owners who have
+  competing definitions of "done."
+
+### 2. Reusable infrastructure: the @amzn → @amazon-devices rescoping framework
+
+- One month before GA, the device-platform release was about to ship blocked:
+  prior owner (now at a PE firm) had created [N] packages under Amazon's
+  internal-only @amzn scope. Internal scope cannot publish to public npm.
+- I designed a release-pipeline framework that rewrites @amzn → @amazon-devices
+  during publish, preserves dependency graphs, and validates the rescope
+  before npm push. Not a one-off fix — reusable infrastructure.
+- Unblocked GA on time. The framework is now the standard publish path for
+  [X] other packages in the same pipeline.
+- In the JD's words: "reusable infrastructure, patterns, and components
+  that other enterprise teams can build on."
+
+### 3. Multi-agent orchestration, in two parts
+
+**Part A — Production: SDK team AI tools (developer tooling)**
+- Internal package I designed and own end-to-end; used daily by ~[N] engineers
+- I built: the skill contract (extension API), the router/orchestrator agent,
+  and the sub-agent integration pattern
+- Architecture: router-and-skills with specialized sub-agents
+  - SDK agent — top-level router/dispatcher
+  - Skills — modular capability extensions; the team adds them, not me
+  - Sub-agents — domain specialists (build-tools, Amazon/Devices org agents)
+- Honest scope: multi-agent architecture for human-in-the-loop developer
+  workflows. Consumers are ~few hundred internal devs working in agentic
+  harnesses (Claude Code, kiro-cli). Not fully autonomous multi-agentic.
+- Approval flows: delegated to the user's harness. Those harnesses already
+  implement approval UX; adding another layer would be redundant. If a
+  specific skill needs approval beyond what the harness provides, the
+  responsibility belongs to the skill, not the orchestrator. Composition
+  over centralization.
+- Observability: deliberate non-investment. Agents act on behalf of
+  developers via downstream systems (build, auth, etc.) that are already
+  observable. Adding agent-level traces would duplicate signal at real cost.
+
+**Part B — Exploratory: AgentCore build automation**
+- Currently building a fully autonomous multi-agentic system on Amazon
+  Bedrock AgentCore for build automation: [specific scope]
+- Autonomous agents acting on systems without a developer in the loop is
+  a fundamentally different problem category. Here, agent-level
+  observability isn't optional — the orchestration IS the system you
+  need to observe.
+- Why AgentCore: first-class observability, identity, and gateway primitives
+  that are structural to autonomous multi-agent systems, not retrofitted.
+- Part A proves I can architect multi-agent; Part B is me building in the
+  same category EPT plays in.
+
+### 4. Enterprise build-pipeline bridge: Brazil/Builder Hub → public npm
+
+- Authored custom adapters that translate Amazon-internal build assumptions
+  (versioning, scope, metadata, dependency resolution) into npm-compatible
+  artifacts.
+- Led effort to publish all @amazon-devices scoped packages to npmjs.
+
+### 5. Prior: LabCorp (6+ years, Tech Lead / Principal Engineer)
+
+- Led AWS cloud migration for LabCorp's [scope]. Designed cloud architecture,
+  managed migration roadmap, coordinated across engineering, security, and
+  operations teams. Enterprise-scale infrastructure transformation in a
+  healthcare/regulated environment.
+- End-to-end ML projects in LabCorp Diagnostics (research division):
+  problem scoping through deployment in a regulated clinical environment
+  with compliance, audit, and data governance requirements.
+- Progressed from full-stack developer to Tech Lead to Principal Engineer
+  over 6+ years. Healthcare domain experience with controls, approvals,
+  auditability, and compliance — directly maps to EPT's enterprise
+  requirements.
+
+## How my background maps to the JD
+
+| JD requirement                                     | My evidence                                              |
+|----------------------------------------------------|----------------------------------------------------------|
+| MCP connectors with auth, permissions, retries     | Own a production MCP with dual-audience content firewall |
+| Reusable infrastructure other teams build on       | Rescoping framework, now standard for [X] packages       |
+| Multi-agent workflows                              | SDK team AI tools (production) + AgentCore (exploratory) |
+| Internal apps and integration platforms            | Amazon Devices buildertools — internal dev platform      |
+| High ownership in ambiguous environments           | Owned someone else's broken release one month before GA  |
+| Enterprise systems: controls, audit, permissions   | Amazon-scale release infra + LabCorp regulated systems   |
+| Strong Python                                      | Daily driver alongside TypeScript                        |
+| Partner with system owners and business owners     | SAs, evangelists, support, product leadership alignment  |
+
+## What this profile does NOT claim
+
+- I am not a research scientist; I do not publish at NeurIPS.
+- The MCP server is not a sophisticated AI system — it is enterprise plumbing
+  with an MCP shape. That is the right tool for the job at hand.
+- The SDK team AI tools is multi-agent architecture, not autonomous multi-agent.
+  The distinction matters and I'm honest about it.
+- My AgentCore work is exploratory, not production.
+
+## Stack
+
+Python (daily driver), TypeScript (MCP package, internal tools), Node.js,
+npm package authoring, Amazon Brazil/Builder Hub, AWS (SageMaker, Lambda,
+ECS, CDK), Docker, Kubernetes, Claude Code, kiro-cli, Amazon Bedrock,
+AgentCore, Git, GitHub Actions.
+
+## Links
+
+- Canonical resume: iHrushikesh.github.io/resume.pdf
+- Other audience variants: [name].com/variants
+- GitHub: github.com/iHrushikesh
+- MCP package: npmjs.com/package/@amazon-devices/amazon-devices-buildertools-mcp
